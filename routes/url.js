@@ -7,29 +7,20 @@ const util = require("util")
 const lookup = util.promisify(dns.lookup)
 
 const isHttp = async (url) => {
-  const expRegHttp = /(https?:\/\/)?|localhost/;
+  const expRegHttp = /https?:\/\/|localhost/;
 
-  const expReg = /(https?:\/\/)?(w{3}.)?[\w.]{0,}.[a-z]{0,}/;
+  const expReg = /(https?:\/\/)?(w{3}.)?[\w.-]{0,}.[a-z]{0,}/;
 
   //separar url
   let newUrl = (/localhost/.test(url) != false ? url.match(/localhost/)[0] : null)
     || (expReg.test(url) != false ? url.match(expReg)[0].replace(/www.|https?:\/\/|\/\w{0,}$|/g, "") : null);
-  console.log(newUrl)
 
-  //si no coincide con la expresion significa que cualquier otra cosa 
+  //si no coincide con la expresion significa que cualquier otra cosa o que la url no esta bien escrita 
+  console.log(expRegHttp.test(url))
   if (!expRegHttp.test(url) || !newUrl) {
-    console.log("entro false")
-    return false;
+    throw new TypeError("invalid url");
   }
-
-
-  try {
-    await lookup(newUrl)
-    return true;
-  } catch (error) {
-    console.log(error.message)
-    throw `${url} don't exist `;
-  }
+  await lookup(newUrl)
 }
 
 const generationCode = (arr) => {
@@ -40,20 +31,14 @@ const generationCode = (arr) => {
 }
 
 const Url = require("../models/Url")
+const { throws } = require("assert")
 router.post("/shorturl", async (req, res) => {
   const { url: longUrl } = req.body;
-  // console.log(longUrl)
-  // dns.lookup(longUrl, (err, address, family) => {
-  //   console.log('address: %j family: IPv%s', address, family);
-  // });
   try {
-    // await lookup(process.env.baseUrl)
-    if (! await isHttp(process.env.baseUrl)) {
-      return res.json("Base Url invalid")
-    }
-    //check long Url 
-    // if (!url) {
-    //   res.status(401).json("Url base don't exist")
+    //queria decir que la url esta bien 
+    await isHttp(process.env.baseUrl)
+    // if (! await isHttp(process.env.baseUrl)) {
+    //   res.json({ error: "invalid url" })
     // }
 
     //generator the number random
@@ -61,16 +46,12 @@ router.post("/shorturl", async (req, res) => {
 
     //check short Url 
 
-    if (!await isHttp(longUrl)) {
-      return res.json("Url invalid")
-    }
-    // await lookup(longUrl);
-    // if (url) {
-    //   
-
-    // } else {
-    //   res.json("Url don't exist ")
+    //queria decir que la url esta bien 
+    await isHttp(longUrl)
+    // if (! await isHttp(longUrl)) {
+    //   res.json({ error: "invalid url" })
     // }
+
 
     url = await Url.findOne({ original_url: longUrl })
 
@@ -90,13 +71,13 @@ router.post("/shorturl", async (req, res) => {
 
   } catch (error) {
     console.log(error.message)
-    res.json(error.message)
+    //qeria decir que la url no existe
+    res.json({ error: "invalid url" })
   }
 
   //comprobar url base 
   //comprobar url de envio 
   //crear numero random 
-  //redirect 
 
 
 })
