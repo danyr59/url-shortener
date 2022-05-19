@@ -7,6 +7,7 @@ const util = require("util")
 const lookup = util.promisify(dns.lookup)
 
 const isHttp = async (url) => {
+  console.log(url)
   const expRegHttp = /https?:\/\/|localhost/;
 
   const expReg = /(https?:\/\/)?(w{3}.)?[\w.-]{0,}.[a-z]{0,}/;
@@ -16,7 +17,6 @@ const isHttp = async (url) => {
     || (expReg.test(url) != false ? url.match(expReg)[0].replace(/www.|https?:\/\/|\/\w{0,}$|/g, "") : null);
 
   //si no coincide con la expresion significa que cualquier otra cosa o que la url no esta bien escrita 
-  console.log(url)
   console.log(expRegHttp.test(url))
   if (!expRegHttp.test(url) || !newUrl) {
     throw new TypeError(`invalid url : ${url}`);
