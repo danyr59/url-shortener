@@ -10,8 +10,6 @@ const app = express();
 connectDB();
 
 // Basic Configuration
-const port = process.env.PORT || 3000;
-
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(cors());
@@ -32,6 +30,8 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.listen(port, function() {
-  console.log(`Listening on port ${port}`);
+//config 
+app.set("port", process.env.PORT || 3000)
+app.listen(app.get("port"), function() {
+  console.log(`Listening on port ${app.get("port")}`);
 });
