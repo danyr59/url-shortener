@@ -18,7 +18,7 @@ const isHttp = async (url) => {
   //si no coincide con la expresion significa que cualquier otra cosa o que la url no esta bien escrita 
   console.log(expRegHttp.test(url))
   if (!expRegHttp.test(url) || !newUrl) {
-    throw new TypeError("invalid url");
+    throw new TypeError(`invalid url : ${url}`);
   }
   await lookup(newUrl)
 }
@@ -72,7 +72,7 @@ router.post("/shorturl", async (req, res) => {
   } catch (error) {
     console.log(error.message)
     //qeria decir que la url no existe
-    res.json({ error: "invalid url" })
+    res.json({ error: error.message})
   }
 
   //comprobar url base 
