@@ -16,6 +16,7 @@ const isHttp = async (url) => {
     || (expReg.test(url) != false ? url.match(expReg)[0].replace(/www.|https?:\/\/|\/\w{0,}$|/g, "") : null);
 
   //si no coincide con la expresion significa que cualquier otra cosa o que la url no esta bien escrita 
+  console.log(url)
   console.log(expRegHttp.test(url))
   if (!expRegHttp.test(url) || !newUrl) {
     throw new TypeError(`invalid url : ${url}`);
@@ -72,7 +73,7 @@ router.post("/shorturl", async (req, res) => {
   } catch (error) {
     console.log(error.message)
     //qeria decir que la url no existe
-    res.json({ error: error.message})
+    res.json({ error: error.message })
   }
 
   //comprobar url base 
